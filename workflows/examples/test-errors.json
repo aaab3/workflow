@@ -1,0 +1,84 @@
+{
+  "id": "test-errors-001",
+  "name": "Error Handling Test",
+  "description": "Tests error handling with continue strategy",
+  "version": "1.0.0",
+  "settings": {
+    "maxExecutionTime": 30000,
+    "maxNodeRetries": 0,
+    "errorStrategy": "continue",
+    "concurrencyLimit": 5
+  },
+  "nodes": [
+    {
+      "id": "good-start",
+      "type": "code-javascript",
+      "position": { "x": 100, "y": 200 },
+      "data": {
+        "label": "Good Start",
+        "config": {
+          "code": "return { message: 'started ok' };"
+        },
+        "inputs": [],
+        "outputs": [
+          { "id": "message", "name": "Message", "type": "string" }
+        ]
+      }
+    },
+    {
+      "id": "error-node",
+      "type": "code-javascript",
+      "position": { "x": 300, "y": 200 },
+      "data": {
+        "label": "Error Node",
+        "config": {
+          "code": "throw new Error('Intentional test error!');"
+        },
+        "inputs": [
+          { "id": "message", "name": "Message", "type": "string" }
+        ],
+        "outputs": [
+          { "id": "result", "name": "Result", "type": "string" }
+        ]
+      }
+    },
+    {
+      "id": "downstream-of-error",
+      "type": "code-javascript",
+      "position": { "x": 500, "y": 200 },
+      "data": {
+        "label": "Downstream of Error (should be skipped)",
+        "config": {
+          "code": "return { message: 'THIS SHOULD NOT RUN' };"
+        },
+        "inputs": [
+          { "id": "result", "name": "Result", "type": "string" }
+        ],
+        "outputs": [
+          { "id": "message", "name": "Message", "type": "string" }
+        ]
+      }
+    },
+    {
+      "id": "independent-node",
+      "type": "code-javascript",
+      "position": { "x": 300, "y": 400 },
+      "data": {
+        "label": "Independent Node (should still run)",
+        "config": {
+          "code": "return { message: 'independent completed' };"
+        },
+        "inputs": [],
+        "outputs": [
+          { "id": "message", "name": "Message", "type": "string" }
+        ]
+      }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "good-start", "sourceHandle": "message", "target": "error-node", "targetHandle": "message" },
+    { "id": "e2", "source": "error-node", "sourceHandle": "result", "target": "downstream-of-error", "targetHandle": "result" }
+  ],
+  "variables": [],
+  "triggers": [{ "type": "manual", "enabled": true, "config": {} }]
+}

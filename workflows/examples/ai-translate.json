@@ -1,0 +1,76 @@
+{
+  "id": "ai-translate-001",
+  "name": "AI 翻译管道",
+  "description": "读取文件 → LLM 翻译 → 写入翻译结果",
+  "version": "1.0.0",
+  "settings": {
+    "maxExecutionTime": 60000,
+    "maxNodeRetries": 1,
+    "errorStrategy": "fail-fast",
+    "concurrencyLimit": 5
+  },
+  "nodes": [
+    {
+      "id": "read-source",
+      "type": "io-file-read",
+      "position": { "x": 100, "y": 200 },
+      "data": {
+        "label": "读取源文件",
+        "config": { "path": "{{input.sourceFile}}" },
+        "inputs": [],
+        "outputs": [
+          { "id": "content", "name": "文件内容", "type": "string" },
+          { "id": "size", "name": "文件大小", "type": "number" }
+        ]
+      }
+    },
+    {
+      "id": "translate",
+      "type": "llm-chat",
+      "position": { "x": 400, "y": 200 },
+      "data": {
+        "label": "LLM 翻译",
+        "config": {
+          "baseUrl": "https://api.openai.com/v1",
+          "model": "gpt-4o-mini",
+          "systemPrompt": "You are a professional translator. Translate the following text from {{input.sourceLang}} to {{input.targetLang}}. Preserve formatting, code blocks, and markdown structure. Only output the translated text without any explanation.",
+          "temperature": 0.3,
+          "maxTokens": 4096
+        },
+        "inputs": [{ "id": "userMessage", "name": "源文本", "type": "string" }],
+        "outputs": [
+          { "id": "response", "name": "翻译结果", "type": "string" },
+          { "id": "usage", "name": "Token 用量", "type": "object" }
+        ]
+      }
+    },
+    {
+      "id": "write-output",
+      "type": "io-file-write",
+      "position": { "x": 700, "y": 200 },
+      "data": {
+        "label": "写入翻译文件",
+        "config": {
+          "path": "{{input.outputFile}}",
+          "content": "{{translate.response}}"
+        },
+        "inputs": [{ "id": "content", "name": "翻译内容", "type": "string" }],
+        "outputs": [
+          { "id": "success", "name": "是否成功", "type": "boolean" },
+          { "id": "path", "name": "文件路径", "type": "string" }
+        ]
+      }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "read-source", "sourceHandle": "content", "target": "translate", "targetHandle": "userMessage" },
+    { "id": "e2", "source": "translate", "sourceHandle": "response", "target": "write-output", "targetHandle": "content" }
+  ],
+  "variables": [
+    { "name": "sourceLang", "type": "string", "defaultValue": "Chinese", "description": "源语言" },
+    { "name": "targetLang", "type": "string", "defaultValue": "English", "description": "目标语言" },
+    { "name": "sourceFile", "type": "string", "description": "源文件路径" },
+    { "name": "outputFile", "type": "string", "description": "输出文件路径" }
+  ],
+  "triggers": [{ "type": "manual", "enabled": true, "config": {} }]
+}

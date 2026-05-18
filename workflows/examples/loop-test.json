@@ -1,0 +1,49 @@
+{
+  "id": "loop-test-001",
+  "name": "循环测试",
+  "description": "生成数组 → 循环处理每个元素 → 输出结果",
+  "version": "1.0.0",
+  "settings": {
+    "maxExecutionTime": 10000,
+    "maxNodeRetries": 0,
+    "errorStrategy": "fail-fast",
+    "concurrencyLimit": 5
+  },
+  "nodes": [
+    {
+      "id": "generate",
+      "type": "code-javascript",
+      "position": { "x": 100, "y": 200 },
+      "data": {
+        "label": "生成数据",
+        "config": {
+          "code": "return { items: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] };"
+        },
+        "inputs": [],
+        "outputs": [{ "id": "items", "name": "数组", "type": "array" }]
+      }
+    },
+    {
+      "id": "loop",
+      "type": "flow-loop",
+      "position": { "x": 400, "y": 200 },
+      "data": {
+        "label": "平方计算",
+        "config": {
+          "mode": "forEach",
+          "expression": "item * item"
+        },
+        "inputs": [{ "id": "items", "name": "数组", "type": "array" }],
+        "outputs": [
+          { "id": "results", "name": "结果", "type": "array" },
+          { "id": "count", "name": "数量", "type": "number" }
+        ]
+      }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "generate", "sourceHandle": "items", "target": "loop", "targetHandle": "items" }
+  ],
+  "variables": [],
+  "triggers": [{ "type": "manual", "enabled": true, "config": {} }]
+}

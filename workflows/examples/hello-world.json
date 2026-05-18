@@ -1,0 +1,33 @@
+{
+  "id": "hello-world-001",
+  "name": "Hello World",
+  "description": "简单的代码执行示例：生成问候语并输出",
+  "version": "1.0.0",
+  "settings": {
+    "maxExecutionTime": 10000,
+    "maxNodeRetries": 0,
+    "errorStrategy": "fail-fast",
+    "concurrencyLimit": 5
+  },
+  "nodes": [
+    {
+      "id": "greet",
+      "type": "code-javascript",
+      "position": { "x": 100, "y": 200 },
+      "data": {
+        "label": "生成问候语",
+        "config": {
+          "code": "const name = inputs.name || 'World';\nreturn { greeting: `Hello, ${name}!`, timestamp: new Date().toISOString() };"
+        },
+        "inputs": [{ "id": "name", "name": "名字", "type": "string" }],
+        "outputs": [
+          { "id": "greeting", "name": "问候语", "type": "string" },
+          { "id": "timestamp", "name": "时间戳", "type": "string" }
+        ]
+      }
+    }
+  ],
+  "edges": [],
+  "variables": [],
+  "triggers": [{ "type": "manual", "enabled": true, "config": {} }]
+}

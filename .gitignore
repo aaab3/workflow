@@ -1,0 +1,21 @@
+# Override parent directory's "ignore everything" rule
+!*
+!*/
+
+node_modules/
+dist/
+.turbo/
+*.tsbuildinfo
+.env
+.env.local
+workflows/*.json
+!workflows/examples/*.json
+tmp/
+*.db
+*.hex
+.credentials/
+
+# E2E test artifacts
+e2e/.test-workflows/
+playwright-report/
+test-results/

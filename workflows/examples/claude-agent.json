@@ -1,0 +1,52 @@
+{
+  "id": "claude-agent-001",
+  "name": "Claude Agent 测试",
+  "description": "通过终端调用本机 Claude Code，让它回答问题",
+  "version": "1.0.0",
+  "settings": {
+    "maxExecutionTime": 120000,
+    "maxNodeRetries": 0,
+    "errorStrategy": "fail-fast",
+    "concurrencyLimit": 5
+  },
+  "nodes": [
+    {
+      "id": "prepare",
+      "type": "code-javascript",
+      "position": { "x": 100, "y": 200 },
+      "data": {
+        "label": "准备问题",
+        "config": {
+          "code": "const question = inputs.question || '用一句话解释什么是工作流';\nreturn { question };"
+        },
+        "inputs": [{ "id": "question", "name": "问题", "type": "string" }],
+        "outputs": [{ "id": "question", "name": "问题", "type": "string" }]
+      }
+    },
+    {
+      "id": "claude",
+      "type": "io-terminal",
+      "position": { "x": 400, "y": 200 },
+      "data": {
+        "label": "调用 Claude",
+        "config": {
+          "command": "claude -p",
+          "stdinMode": "text",
+          "outputMode": "text",
+          "timeout": 60000,
+          "shell": true
+        },
+        "inputs": [{ "id": "stdin", "name": "问题", "type": "string" }],
+        "outputs": [
+          { "id": "stdout", "name": "回复", "type": "string" },
+          { "id": "exitCode", "name": "退出码", "type": "number" }
+        ]
+      }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "prepare", "sourceHandle": "question", "target": "claude", "targetHandle": "stdin" }
+  ],
+  "variables": [],
+  "triggers": [{ "type": "manual", "enabled": true, "config": {} }]
+}

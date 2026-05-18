@@ -1,0 +1,37 @@
+{
+  "id": "terminal-test-001",
+  "name": "终端模块测试",
+  "description": "测试终端/Agent 模块：执行 echo 命令",
+  "version": "1.0.0",
+  "settings": {
+    "maxExecutionTime": 30000,
+    "maxNodeRetries": 0,
+    "errorStrategy": "fail-fast",
+    "concurrencyLimit": 5
+  },
+  "nodes": [
+    {
+      "id": "agent",
+      "type": "io-terminal",
+      "position": { "x": 100, "y": 200 },
+      "data": {
+        "label": "调用终端",
+        "config": {
+          "command": "echo Hello from terminal agent!",
+          "stdinMode": "none",
+          "outputMode": "text",
+          "shell": true
+        },
+        "inputs": [{ "id": "stdin", "name": "输入内容", "type": "string" }],
+        "outputs": [
+          { "id": "stdout", "name": "输出", "type": "string" },
+          { "id": "stderr", "name": "错误", "type": "string" },
+          { "id": "exitCode", "name": "退出码", "type": "number" }
+        ]
+      }
+    }
+  ],
+  "edges": [],
+  "variables": [],
+  "triggers": [{ "type": "manual", "enabled": true, "config": {} }]
+}

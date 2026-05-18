@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "openclaw-workflow": {
+      "command": "node",
+      "args": ["C:/Users/29480/Desktop/workflow/packages/workflow-engine/dist/mcp-server.js"],
+      "env": {
+        "WORKFLOWS_DIR": "C:/Users/29480/Desktop/workflow/workflows/examples"
+      }
+    }
+  }
+}

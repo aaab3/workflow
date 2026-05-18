@@ -1,0 +1,70 @@
+{
+  "id": "batch-process-001",
+  "name": "批量处理管道",
+  "description": "生成数组 → 循环转换每个元素 → 写入结果文件",
+  "version": "1.0.0",
+  "settings": {
+    "maxExecutionTime": 30000,
+    "maxNodeRetries": 0,
+    "errorStrategy": "fail-fast",
+    "concurrencyLimit": 5
+  },
+  "nodes": [
+    {
+      "id": "generate",
+      "type": "code-javascript",
+      "position": { "x": 100, "y": 200 },
+      "data": {
+        "label": "生成数据数组",
+        "config": {
+          "code": "const count = inputs.count || 10;\nconst items = [];\nfor (let i = 1; i <= count; i++) {\n  items.push({ id: i, name: `item-${i}`, value: Math.round(Math.random() * 100) });\n}\nreturn { items };"
+        },
+        "inputs": [{ "id": "count", "name": "数量", "type": "number" }],
+        "outputs": [{ "id": "items", "name": "数据数组", "type": "array" }]
+      }
+    },
+    {
+      "id": "loop-transform",
+      "type": "flow-loop",
+      "position": { "x": 400, "y": 200 },
+      "data": {
+        "label": "转换每个元素",
+        "config": {
+          "mode": "forEach",
+          "expression": "({ ...item, value: item.value * 2, processed: true, processedAt: new Date().toISOString() })"
+        },
+        "inputs": [{ "id": "items", "name": "输入数组", "type": "array" }],
+        "outputs": [
+          { "id": "results", "name": "处理结果", "type": "array" },
+          { "id": "count", "name": "处理数量", "type": "number" }
+        ]
+      }
+    },
+    {
+      "id": "write-results",
+      "type": "io-file-write",
+      "position": { "x": 700, "y": 200 },
+      "data": {
+        "label": "写入结果文件",
+        "config": {
+          "path": "{{input.outputPath}}",
+          "content": "{{loop-transform.results}}"
+        },
+        "inputs": [{ "id": "content", "name": "结果数据", "type": "any" }],
+        "outputs": [
+          { "id": "success", "name": "是否成功", "type": "boolean" },
+          { "id": "path", "name": "文件路径", "type": "string" }
+        ]
+      }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "generate", "sourceHandle": "items", "target": "loop-transform", "targetHandle": "items" },
+    { "id": "e2", "source": "loop-transform", "sourceHandle": "results", "target": "write-results", "targetHandle": "content" }
+  ],
+  "variables": [
+    { "name": "count", "type": "number", "defaultValue": 10, "description": "生成的元素数量" },
+    { "name": "outputPath", "type": "string", "defaultValue": "./batch-output.json", "description": "输出文件路径" }
+  ],
+  "triggers": [{ "type": "manual", "enabled": true, "config": {} }]
+}

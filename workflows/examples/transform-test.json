@@ -1,0 +1,48 @@
+{
+  "id": "transform-test-001",
+  "name": "数据转换测试",
+  "description": "生成数据 → 过滤 → 映射 → 排序",
+  "version": "1.0.0",
+  "settings": { "maxExecutionTime": 10000, "maxNodeRetries": 0, "errorStrategy": "fail-fast", "concurrencyLimit": 5 },
+  "nodes": [
+    {
+      "id": "data",
+      "type": "code-javascript",
+      "position": { "x": 100, "y": 200 },
+      "data": {
+        "label": "生成数据",
+        "config": { "code": "return { data: [{name:'Alice',age:30},{name:'Bob',age:17},{name:'Charlie',age:25},{name:'Diana',age:15}] };" },
+        "inputs": [],
+        "outputs": [{ "id": "data", "name": "数据", "type": "array" }]
+      }
+    },
+    {
+      "id": "filter",
+      "type": "data-transform",
+      "position": { "x": 400, "y": 200 },
+      "data": {
+        "label": "过滤成年人",
+        "config": { "operation": "filter", "expression": "item.age >= 18" },
+        "inputs": [{ "id": "data", "name": "数据", "type": "any" }],
+        "outputs": [{ "id": "result", "name": "结果", "type": "any" }]
+      }
+    },
+    {
+      "id": "pick",
+      "type": "data-transform",
+      "position": { "x": 700, "y": 200 },
+      "data": {
+        "label": "只取名字",
+        "config": { "operation": "pick", "fields": "name" },
+        "inputs": [{ "id": "data", "name": "数据", "type": "any" }],
+        "outputs": [{ "id": "result", "name": "结果", "type": "any" }]
+      }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "data", "sourceHandle": "data", "target": "filter", "targetHandle": "data" },
+    { "id": "e2", "source": "filter", "sourceHandle": "result", "target": "pick", "targetHandle": "data" }
+  ],
+  "variables": [],
+  "triggers": [{ "type": "manual", "enabled": true, "config": {} }]
+}

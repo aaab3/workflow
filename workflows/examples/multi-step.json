@@ -1,0 +1,67 @@
+{
+  "id": "multi-step-001",
+  "name": "多步骤处理",
+  "description": "读取文件 → 代码处理 → 写入结果",
+  "version": "1.0.0",
+  "settings": {
+    "maxExecutionTime": 30000,
+    "maxNodeRetries": 0,
+    "errorStrategy": "fail-fast",
+    "concurrencyLimit": 5
+  },
+  "nodes": [
+    {
+      "id": "read",
+      "type": "io-file-read",
+      "position": { "x": 100, "y": 200 },
+      "data": {
+        "label": "读取文件",
+        "config": { "path": "{{input.inputFile}}" },
+        "inputs": [],
+        "outputs": [
+          { "id": "content", "name": "文件内容", "type": "string" },
+          { "id": "size", "name": "文件大小", "type": "number" }
+        ]
+      }
+    },
+    {
+      "id": "transform",
+      "type": "code-javascript",
+      "position": { "x": 400, "y": 200 },
+      "data": {
+        "label": "转换内容",
+        "config": {
+          "code": "const text = inputs.content || '';\nconst lines = text.split('\\n');\nconst upper = text.toUpperCase();\nreturn { content: upper, lineCount: lines.length };"
+        },
+        "inputs": [{ "id": "content", "name": "原始内容", "type": "string" }],
+        "outputs": [
+          { "id": "content", "name": "转换后内容", "type": "string" },
+          { "id": "lineCount", "name": "行数", "type": "number" }
+        ]
+      }
+    },
+    {
+      "id": "write",
+      "type": "io-file-write",
+      "position": { "x": 700, "y": 200 },
+      "data": {
+        "label": "写入结果",
+        "config": {
+          "path": "{{input.outputFile}}",
+          "content": "{{transform.content}}"
+        },
+        "inputs": [{ "id": "content", "name": "内容", "type": "string" }],
+        "outputs": [
+          { "id": "success", "name": "是否成功", "type": "boolean" },
+          { "id": "path", "name": "文件路径", "type": "string" }
+        ]
+      }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "read", "sourceHandle": "content", "target": "transform", "targetHandle": "content" },
+    { "id": "e2", "source": "transform", "sourceHandle": "content", "target": "write", "targetHandle": "content" }
+  ],
+  "variables": [],
+  "triggers": [{ "type": "manual", "enabled": true, "config": {} }]
+}

@@ -1,0 +1,41 @@
+{
+  "id": "019e2f42-f77a-7721-8af2-a1fe6165adb5",
+  "name": "API Test",
+  "description": "Created via API",
+  "version": "1.0.0",
+  "nodes": [
+    {
+      "type": "code-javascript",
+      "id": "greet",
+      "data": {
+        "outputs": [],
+        "label": "Greet",
+        "config": {
+          "code": "return { message: 'Hello from API!' };"
+        },
+        "inputs": []
+      },
+      "position": {
+        "y": 0,
+        "x": 0
+      }
+    }
+  ],
+  "edges": [],
+  "variables": [],
+  "triggers": [
+    {
+      "type": "manual",
+      "enabled": true,
+      "config": {}
+    }
+  ],
+  "settings": {
+    "maxNodeRetries": 0,
+    "maxExecutionTime": 10000,
+    "concurrencyLimit": 5,
+    "errorStrategy": "fail-fast"
+  },
+  "createdAt": "2026-05-16T05:29:38.426Z",
+  "updatedAt": "2026-05-16T05:29:38.426Z"
+}

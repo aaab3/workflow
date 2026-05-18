@@ -1,0 +1,26 @@
+{
+  "name": "openclaw-workflow",
+  "version": "0.1.0",
+  "private": true,
+  "description": "OpenClaw Workflow - Visual workflow orchestration plugin",
+  "scripts": {
+    "dev:engine": "pnpm --filter @openclaw/workflow-engine dev",
+    "dev:server": "pnpm --filter @openclaw/workflow-server dev",
+    "dev:ui": "pnpm --filter @openclaw/workflow-ui dev",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test:run",
+    "test:run": "pnpm -r test:run",
+    "test:engine": "pnpm --filter @openclaw/workflow-engine test:run",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "lint": "eslint packages/",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "packageManager": "pnpm@11.1.2",
+  "devDependencies": {
+    "@playwright/test": "^1.60.0"
+  }
+}

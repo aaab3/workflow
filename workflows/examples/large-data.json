@@ -1,0 +1,55 @@
+{
+  "id": "large-data-001",
+  "name": "Large Data Test",
+  "description": "Tests passing 100KB+ data between nodes",
+  "version": "1.0.0",
+  "settings": {
+    "maxExecutionTime": 30000,
+    "maxNodeRetries": 0,
+    "errorStrategy": "fail-fast",
+    "concurrencyLimit": 5
+  },
+  "nodes": [
+    {
+      "id": "generator",
+      "type": "code-javascript",
+      "position": { "x": 100, "y": 200 },
+      "data": {
+        "label": "Generate Large Data",
+        "config": {
+          "code": "const size = 100000; let str = ''; for (let i = 0; i < size; i++) { str += 'A'; } return { data: str, length: str.length };"
+        },
+        "inputs": [],
+        "outputs": [
+          { "id": "data", "name": "Data", "type": "string" },
+          { "id": "length", "name": "Length", "type": "number" }
+        ]
+      }
+    },
+    {
+      "id": "receiver",
+      "type": "code-javascript",
+      "position": { "x": 400, "y": 200 },
+      "data": {
+        "label": "Receive and Verify",
+        "config": {
+          "code": "const data = inputs.data || ''; return { receivedLength: data.length, isCorrect: data.length === 100000, firstChar: data[0], lastChar: data[data.length - 1] };"
+        },
+        "inputs": [
+          { "id": "data", "name": "Data", "type": "string" }
+        ],
+        "outputs": [
+          { "id": "receivedLength", "name": "Received Length", "type": "number" },
+          { "id": "isCorrect", "name": "Is Correct", "type": "boolean" },
+          { "id": "firstChar", "name": "First Char", "type": "string" },
+          { "id": "lastChar", "name": "Last Char", "type": "string" }
+        ]
+      }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "generator", "sourceHandle": "data", "target": "receiver", "targetHandle": "data" }
+  ],
+  "variables": [],
+  "triggers": [{ "type": "manual", "enabled": true, "config": {} }]
+}
