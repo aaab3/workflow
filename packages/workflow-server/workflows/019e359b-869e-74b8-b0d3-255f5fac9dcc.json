@@ -1,0 +1,57 @@
+{
+  "id": "019e359b-869e-74b8-b0d3-255f5fac9dcc",
+  "name": "Untitled Workflow",
+  "version": "1.0.0",
+  "nodes": [
+    {
+      "id": "node-1779015580897",
+      "type": "llm-chat",
+      "position": {
+        "x": 448.27695246750443,
+        "y": 236.29739670999408
+      },
+      "data": {
+        "label": "LLM 对话",
+        "config": {
+          "model": ""
+        },
+        "inputs": [
+          {
+            "id": "userMessage",
+            "name": "用户消息",
+            "type": "string"
+          }
+        ],
+        "outputs": [
+          {
+            "id": "response",
+            "name": "回复",
+            "type": "string"
+          },
+          {
+            "id": "usage",
+            "name": "用量",
+            "type": "object"
+          }
+        ]
+      }
+    }
+  ],
+  "edges": [],
+  "variables": [],
+  "triggers": [
+    {
+      "type": "manual",
+      "enabled": true,
+      "config": {}
+    }
+  ],
+  "settings": {
+    "maxExecutionTime": 300000,
+    "maxNodeRetries": 0,
+    "errorStrategy": "fail-fast",
+    "concurrencyLimit": 10
+  },
+  "createdAt": "2026-05-17T11:04:05.534Z",
+  "updatedAt": "2026-05-17T11:04:05.535Z"
+}

@@ -1,0 +1,52 @@
+{
+  "id": "019e2ff9-1036-75c3-96e4-c55008556610",
+  "name": "Untitled Workflow",
+  "version": "1.0.0",
+  "nodes": [
+    {
+      "id": "node-1778921304755",
+      "type": "code-javascript",
+      "position": {
+        "x": 632,
+        "y": 267
+      },
+      "data": {
+        "label": "JavaScript 代码",
+        "config": {
+          "code": "return { message: \"Hello World!\" }"
+        },
+        "inputs": [
+          {
+            "id": "data",
+            "name": "输入数据",
+            "type": "any"
+          }
+        ],
+        "outputs": [
+          {
+            "id": "result",
+            "name": "结果",
+            "type": "any"
+          }
+        ]
+      }
+    }
+  ],
+  "edges": [],
+  "variables": [],
+  "triggers": [
+    {
+      "type": "manual",
+      "enabled": true,
+      "config": {}
+    }
+  ],
+  "settings": {
+    "maxExecutionTime": 300000,
+    "maxNodeRetries": 0,
+    "errorStrategy": "fail-fast",
+    "concurrencyLimit": 10
+  },
+  "createdAt": "2026-05-16T08:48:32.311Z",
+  "updatedAt": "2026-05-16T08:48:32.312Z"
+}
