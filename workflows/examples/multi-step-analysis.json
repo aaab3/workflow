@@ -1,0 +1,127 @@
+{
+  "id": "multi-step-analysis-001",
+  "name": "多步骤智能分析",
+  "description": "读取文件 → LLM 结构化提取 → 数据转换 → 条件分支 → 不同输出",
+  "version": "1.0.0",
+  "settings": {
+    "maxExecutionTime": 90000,
+    "maxNodeRetries": 1,
+    "errorStrategy": "continue",
+    "concurrencyLimit": 5
+  },
+  "nodes": [
+    {
+      "id": "read-input",
+      "type": "io-file-read",
+      "position": { "x": 100, "y": 300 },
+      "data": {
+        "label": "读取输入文件",
+        "config": { "path": "{{input.inputFile}}" },
+        "inputs": [],
+        "outputs": [
+          { "id": "content", "name": "文件内容", "type": "string" },
+          { "id": "size", "name": "文件大小", "type": "number" }
+        ]
+      }
+    },
+    {
+      "id": "llm-extract",
+      "type": "llm-structured",
+      "position": { "x": 400, "y": 300 },
+      "data": {
+        "label": "LLM 结构化提取",
+        "config": {
+          "baseUrl": "https://api.openai.com/v1",
+          "model": "gpt-4o-mini",
+          "systemPrompt": "Extract structured information from the given text. Identify key entities, sentiment, topics, and a summary.",
+          "schema": "{\"type\":\"object\",\"properties\":{\"summary\":{\"type\":\"string\"},\"sentiment\":{\"type\":\"string\",\"enum\":[\"positive\",\"negative\",\"neutral\"]},\"confidence\":{\"type\":\"number\",\"minimum\":0,\"maximum\":1},\"topics\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"entities\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\"},\"type\":{\"type\":\"string\"}}}}},\"required\":[\"summary\",\"sentiment\",\"confidence\",\"topics\"]}",
+          "temperature": 0.2
+        },
+        "inputs": [
+          { "id": "prompt", "name": "提示词", "type": "string" },
+          { "id": "data", "name": "输入数据", "type": "any" }
+        ],
+        "outputs": [
+          { "id": "result", "name": "结构化结果", "type": "object" },
+          { "id": "raw", "name": "原始回复", "type": "string" }
+        ]
+      }
+    },
+    {
+      "id": "transform-data",
+      "type": "data-transform",
+      "position": { "x": 700, "y": 300 },
+      "data": {
+        "label": "提取主题列表",
+        "config": {
+          "operation": "pick",
+          "fields": "sentiment, confidence, topics"
+        },
+        "inputs": [{ "id": "data", "name": "结构化数据", "type": "any" }],
+        "outputs": [{ "id": "result", "name": "精简数据", "type": "any" }]
+      }
+    },
+    {
+      "id": "check-sentiment",
+      "type": "flow-condition",
+      "position": { "x": 1000, "y": 300 },
+      "data": {
+        "label": "判断情感倾向",
+        "config": {
+          "expression": "inputs.data?.sentiment === 'positive' && inputs.data?.confidence > 0.7"
+        },
+        "inputs": [{ "id": "data", "name": "分析数据", "type": "any" }],
+        "outputs": [
+          { "id": "true", "name": "正面", "type": "any" },
+          { "id": "false", "name": "非正面", "type": "any" }
+        ]
+      }
+    },
+    {
+      "id": "write-positive",
+      "type": "io-file-write",
+      "position": { "x": 1300, "y": 150 },
+      "data": {
+        "label": "写入正面报告",
+        "config": {
+          "path": "{{input.outputDir}}/positive-report.json",
+          "content": "{{llm-extract.result}}"
+        },
+        "inputs": [{ "id": "content", "name": "报告内容", "type": "any" }],
+        "outputs": [
+          { "id": "success", "name": "是否成功", "type": "boolean" },
+          { "id": "path", "name": "文件路径", "type": "string" }
+        ]
+      }
+    },
+    {
+      "id": "write-negative",
+      "type": "io-file-write",
+      "position": { "x": 1300, "y": 450 },
+      "data": {
+        "label": "写入待关注报告",
+        "config": {
+          "path": "{{input.outputDir}}/attention-report.json",
+          "content": "{{llm-extract.result}}"
+        },
+        "inputs": [{ "id": "content", "name": "报告内容", "type": "any" }],
+        "outputs": [
+          { "id": "success", "name": "是否成功", "type": "boolean" },
+          { "id": "path", "name": "文件路径", "type": "string" }
+        ]
+      }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "read-input", "sourceHandle": "content", "target": "llm-extract", "targetHandle": "data" },
+    { "id": "e2", "source": "llm-extract", "sourceHandle": "result", "target": "transform-data", "targetHandle": "data" },
+    { "id": "e3", "source": "transform-data", "sourceHandle": "result", "target": "check-sentiment", "targetHandle": "data" },
+    { "id": "e4", "source": "check-sentiment", "sourceHandle": "true", "target": "write-positive", "targetHandle": "content" },
+    { "id": "e5", "source": "check-sentiment", "sourceHandle": "false", "target": "write-negative", "targetHandle": "content" }
+  ],
+  "variables": [
+    { "name": "inputFile", "type": "string", "description": "输入文件路径" },
+    { "name": "outputDir", "type": "string", "defaultValue": "./analysis-output", "description": "输出目录" }
+  ],
+  "triggers": [{ "type": "manual", "enabled": true, "config": {} }]
+}

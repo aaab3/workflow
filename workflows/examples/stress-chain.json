@@ -1,0 +1,224 @@
+{
+  "id": "stress-chain-001",
+  "name": "Stress Chain Test",
+  "description": "10 nodes chained sequentially to test long data passing",
+  "version": "1.0.0",
+  "settings": {
+    "maxExecutionTime": 30000,
+    "maxNodeRetries": 0,
+    "errorStrategy": "fail-fast",
+    "concurrencyLimit": 5
+  },
+  "nodes": [
+    {
+      "id": "step-1",
+      "type": "code-javascript",
+      "position": { "x": 100, "y": 200 },
+      "data": {
+        "label": "Step 1 - Initialize",
+        "config": {
+          "code": "return { value: 1, chain: 'step1' };"
+        },
+        "inputs": [],
+        "outputs": [
+          { "id": "value", "name": "Value", "type": "number" },
+          { "id": "chain", "name": "Chain", "type": "string" }
+        ]
+      }
+    },
+    {
+      "id": "step-2",
+      "type": "code-javascript",
+      "position": { "x": 200, "y": 200 },
+      "data": {
+        "label": "Step 2",
+        "config": {
+          "code": "return { value: inputs.value * 2, chain: inputs.chain + '->step2' };"
+        },
+        "inputs": [
+          { "id": "value", "name": "Value", "type": "number" },
+          { "id": "chain", "name": "Chain", "type": "string" }
+        ],
+        "outputs": [
+          { "id": "value", "name": "Value", "type": "number" },
+          { "id": "chain", "name": "Chain", "type": "string" }
+        ]
+      }
+    },
+    {
+      "id": "step-3",
+      "type": "code-javascript",
+      "position": { "x": 300, "y": 200 },
+      "data": {
+        "label": "Step 3",
+        "config": {
+          "code": "return { value: inputs.value * 2, chain: inputs.chain + '->step3' };"
+        },
+        "inputs": [
+          { "id": "value", "name": "Value", "type": "number" },
+          { "id": "chain", "name": "Chain", "type": "string" }
+        ],
+        "outputs": [
+          { "id": "value", "name": "Value", "type": "number" },
+          { "id": "chain", "name": "Chain", "type": "string" }
+        ]
+      }
+    },
+    {
+      "id": "step-4",
+      "type": "code-javascript",
+      "position": { "x": 400, "y": 200 },
+      "data": {
+        "label": "Step 4",
+        "config": {
+          "code": "return { value: inputs.value * 2, chain: inputs.chain + '->step4' };"
+        },
+        "inputs": [
+          { "id": "value", "name": "Value", "type": "number" },
+          { "id": "chain", "name": "Chain", "type": "string" }
+        ],
+        "outputs": [
+          { "id": "value", "name": "Value", "type": "number" },
+          { "id": "chain", "name": "Chain", "type": "string" }
+        ]
+      }
+    },
+    {
+      "id": "step-5",
+      "type": "code-javascript",
+      "position": { "x": 500, "y": 200 },
+      "data": {
+        "label": "Step 5",
+        "config": {
+          "code": "return { value: inputs.value * 2, chain: inputs.chain + '->step5' };"
+        },
+        "inputs": [
+          { "id": "value", "name": "Value", "type": "number" },
+          { "id": "chain", "name": "Chain", "type": "string" }
+        ],
+        "outputs": [
+          { "id": "value", "name": "Value", "type": "number" },
+          { "id": "chain", "name": "Chain", "type": "string" }
+        ]
+      }
+    },
+    {
+      "id": "step-6",
+      "type": "code-javascript",
+      "position": { "x": 600, "y": 200 },
+      "data": {
+        "label": "Step 6",
+        "config": {
+          "code": "return { value: inputs.value * 2, chain: inputs.chain + '->step6' };"
+        },
+        "inputs": [
+          { "id": "value", "name": "Value", "type": "number" },
+          { "id": "chain", "name": "Chain", "type": "string" }
+        ],
+        "outputs": [
+          { "id": "value", "name": "Value", "type": "number" },
+          { "id": "chain", "name": "Chain", "type": "string" }
+        ]
+      }
+    },
+    {
+      "id": "step-7",
+      "type": "code-javascript",
+      "position": { "x": 700, "y": 200 },
+      "data": {
+        "label": "Step 7",
+        "config": {
+          "code": "return { value: inputs.value * 2, chain: inputs.chain + '->step7' };"
+        },
+        "inputs": [
+          { "id": "value", "name": "Value", "type": "number" },
+          { "id": "chain", "name": "Chain", "type": "string" }
+        ],
+        "outputs": [
+          { "id": "value", "name": "Value", "type": "number" },
+          { "id": "chain", "name": "Chain", "type": "string" }
+        ]
+      }
+    },
+    {
+      "id": "step-8",
+      "type": "code-javascript",
+      "position": { "x": 800, "y": 200 },
+      "data": {
+        "label": "Step 8",
+        "config": {
+          "code": "return { value: inputs.value * 2, chain: inputs.chain + '->step8' };"
+        },
+        "inputs": [
+          { "id": "value", "name": "Value", "type": "number" },
+          { "id": "chain", "name": "Chain", "type": "string" }
+        ],
+        "outputs": [
+          { "id": "value", "name": "Value", "type": "number" },
+          { "id": "chain", "name": "Chain", "type": "string" }
+        ]
+      }
+    },
+    {
+      "id": "step-9",
+      "type": "code-javascript",
+      "position": { "x": 900, "y": 200 },
+      "data": {
+        "label": "Step 9",
+        "config": {
+          "code": "return { value: inputs.value * 2, chain: inputs.chain + '->step9' };"
+        },
+        "inputs": [
+          { "id": "value", "name": "Value", "type": "number" },
+          { "id": "chain", "name": "Chain", "type": "string" }
+        ],
+        "outputs": [
+          { "id": "value", "name": "Value", "type": "number" },
+          { "id": "chain", "name": "Chain", "type": "string" }
+        ]
+      }
+    },
+    {
+      "id": "step-10",
+      "type": "code-javascript",
+      "position": { "x": 1000, "y": 200 },
+      "data": {
+        "label": "Step 10 - Final",
+        "config": {
+          "code": "return { value: inputs.value * 2, chain: inputs.chain + '->step10', finalValue: inputs.value * 2 };"
+        },
+        "inputs": [
+          { "id": "value", "name": "Value", "type": "number" },
+          { "id": "chain", "name": "Chain", "type": "string" }
+        ],
+        "outputs": [
+          { "id": "value", "name": "Value", "type": "number" },
+          { "id": "chain", "name": "Chain", "type": "string" },
+          { "id": "finalValue", "name": "Final Value", "type": "number" }
+        ]
+      }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "step-1", "sourceHandle": "value", "target": "step-2", "targetHandle": "value" },
+    { "id": "e1b", "source": "step-1", "sourceHandle": "chain", "target": "step-2", "targetHandle": "chain" },
+    { "id": "e2", "source": "step-2", "sourceHandle": "value", "target": "step-3", "targetHandle": "value" },
+    { "id": "e2b", "source": "step-2", "sourceHandle": "chain", "target": "step-3", "targetHandle": "chain" },
+    { "id": "e3", "source": "step-3", "sourceHandle": "value", "target": "step-4", "targetHandle": "value" },
+    { "id": "e3b", "source": "step-3", "sourceHandle": "chain", "target": "step-4", "targetHandle": "chain" },
+    { "id": "e4", "source": "step-4", "sourceHandle": "value", "target": "step-5", "targetHandle": "value" },
+    { "id": "e4b", "source": "step-4", "sourceHandle": "chain", "target": "step-5", "targetHandle": "chain" },
+    { "id": "e5", "source": "step-5", "sourceHandle": "value", "target": "step-6", "targetHandle": "value" },
+    { "id": "e5b", "source": "step-5", "sourceHandle": "chain", "target": "step-6", "targetHandle": "chain" },
+    { "id": "e6", "source": "step-6", "sourceHandle": "value", "target": "step-7", "targetHandle": "value" },
+    { "id": "e6b", "source": "step-6", "sourceHandle": "chain", "target": "step-7", "targetHandle": "chain" },
+    { "id": "e7", "source": "step-7", "sourceHandle": "value", "target": "step-8", "targetHandle": "value" },
+    { "id": "e7b", "source": "step-7", "sourceHandle": "chain", "target": "step-8", "targetHandle": "chain" },
+    { "id": "e8", "source": "step-8", "sourceHandle": "value", "target": "step-9", "targetHandle": "value" },
+    { "id": "e8b", "source": "step-8", "sourceHandle": "chain", "target": "step-9", "targetHandle": "chain" },
+    { "id": "e9", "source": "step-9", "sourceHandle": "value", "target": "step-10", "targetHandle": "value" },
+    { "id": "e9b", "source": "step-9", "sourceHandle": "chain", "target": "step-10", "targetHandle": "chain" }
+  ],
+  "variables": [],
+  "triggers": [{ "type": "manual", "enabled": true, "config": {} }]
+}

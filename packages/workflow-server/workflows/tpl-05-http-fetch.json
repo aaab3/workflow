@@ -1,0 +1,104 @@
+{
+  "id": "tpl-05-http-fetch",
+  "name": "HTTP API 聚合",
+  "description": "【官方模板】请求公开 API → 提取字段 → 格式化（需联网）",
+  "version": "1.0.0",
+  "nodes": [
+    {
+      "id": "fetch",
+      "type": "io-http-request",
+      "position": {
+        "x": 0,
+        "y": 120
+      },
+      "data": {
+        "label": "获取 Todo",
+        "config": {
+          "url": "https://jsonplaceholder.typicode.com/todos/1",
+          "method": "GET",
+          "responseType": "json",
+          "timeout": 15000
+        },
+        "inputs": [],
+        "outputs": []
+      }
+    },
+    {
+      "id": "pick",
+      "type": "data-transform",
+      "position": {
+        "x": 300,
+        "y": 120
+      },
+      "data": {
+        "label": "提取字段",
+        "config": {
+          "operation": "pick",
+          "fields": "title,completed,userId"
+        },
+        "inputs": [
+          {
+            "id": "data",
+            "name": "输入数据",
+            "type": "any"
+          }
+        ],
+        "outputs": []
+      }
+    },
+    {
+      "id": "format",
+      "type": "code-javascript",
+      "position": {
+        "x": 600,
+        "y": 120
+      },
+      "data": {
+        "label": "格式化输出",
+        "config": {
+          "code": "const d = inputs.data;\nreturn {\n  result: {\n    title: d?.title ?? \"(unknown)\",\n    done: Boolean(d?.completed),\n    userId: d?.userId,\n    fetchedAt: new Date().toISOString(),\n  },\n};"
+        },
+        "inputs": [
+          {
+            "id": "data",
+            "name": "数据",
+            "type": "any"
+          }
+        ],
+        "outputs": []
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "fetch",
+      "sourceHandle": "data",
+      "target": "pick",
+      "targetHandle": "data"
+    },
+    {
+      "id": "e2",
+      "source": "pick",
+      "sourceHandle": "result",
+      "target": "format",
+      "targetHandle": "data"
+    }
+  ],
+  "variables": [],
+  "triggers": [
+    {
+      "type": "manual",
+      "enabled": true,
+      "config": {}
+    }
+  ],
+  "settings": {
+    "maxExecutionTime": 120000,
+    "maxNodeRetries": 0,
+    "errorStrategy": "fail-fast",
+    "concurrencyLimit": 10
+  },
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "updatedAt": "2026-05-25T09:26:52.933Z"
+}

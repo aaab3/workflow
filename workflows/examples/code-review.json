@@ -1,0 +1,94 @@
+{
+  "id": "code-review-001",
+  "name": "AI 代码审查",
+  "description": "读取代码文件 → Crew 辩论模式（审查者 + 批评者）→ 写入审查报告",
+  "version": "1.0.0",
+  "settings": {
+    "maxExecutionTime": 120000,
+    "maxNodeRetries": 1,
+    "errorStrategy": "fail-fast",
+    "concurrencyLimit": 5
+  },
+  "nodes": [
+    {
+      "id": "read-code",
+      "type": "io-file-read",
+      "position": { "x": 100, "y": 200 },
+      "data": {
+        "label": "读取代码文件",
+        "config": { "path": "{{input.codeFile}}" },
+        "inputs": [],
+        "outputs": [
+          { "id": "content", "name": "代码内容", "type": "string" },
+          { "id": "size", "name": "文件大小", "type": "number" }
+        ]
+      }
+    },
+    {
+      "id": "crew-review",
+      "type": "crew",
+      "position": { "x": 400, "y": 200 },
+      "data": {
+        "label": "多Agent代码审查",
+        "config": {
+          "mode": "debate",
+          "maxRounds": 3,
+          "qualityThreshold": 8,
+          "contextStrategy": "shared",
+          "maxTokens": 50000,
+          "agents": [
+            {
+              "id": "reviewer",
+              "role": "代码审查专家",
+              "model": { "name": "gpt-4o-mini" },
+              "systemPrompt": "你是一位资深代码审查专家。分析代码的质量、可读性、性能和安全性。指出具体问题并给出改进建议。使用 Markdown 格式输出。",
+              "behavior": { "temperature": 0.4 }
+            },
+            {
+              "id": "critic",
+              "role": "代码批评者",
+              "model": { "name": "gpt-4o-mini" },
+              "systemPrompt": "你是一位严格的代码批评者。挑战审查者的观点，找出遗漏的问题，提出更深层次的架构和设计问题。确保审查全面且有深度。",
+              "behavior": { "temperature": 0.6 }
+            }
+          ]
+        },
+        "inputs": [
+          { "id": "task", "name": "审查任务", "type": "string" },
+          { "id": "data", "name": "代码数据", "type": "any" }
+        ],
+        "outputs": [
+          { "id": "result", "name": "审查结果", "type": "any" },
+          { "id": "messages", "name": "讨论记录", "type": "array" },
+          { "id": "metrics", "name": "执行指标", "type": "object" }
+        ]
+      }
+    },
+    {
+      "id": "write-report",
+      "type": "io-file-write",
+      "position": { "x": 700, "y": 200 },
+      "data": {
+        "label": "写入审查报告",
+        "config": {
+          "path": "{{input.reportFile}}",
+          "content": "{{crew-review.result}}"
+        },
+        "inputs": [{ "id": "content", "name": "报告内容", "type": "any" }],
+        "outputs": [
+          { "id": "success", "name": "是否成功", "type": "boolean" },
+          { "id": "path", "name": "文件路径", "type": "string" }
+        ]
+      }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "read-code", "sourceHandle": "content", "target": "crew-review", "targetHandle": "data" },
+    { "id": "e2", "source": "crew-review", "sourceHandle": "result", "target": "write-report", "targetHandle": "content" }
+  ],
+  "variables": [
+    { "name": "codeFile", "type": "string", "description": "要审查的代码文件路径" },
+    { "name": "reportFile", "type": "string", "defaultValue": "./code-review-report.md", "description": "审查报告输出路径" }
+  ],
+  "triggers": [{ "type": "manual", "enabled": true, "config": {} }]
+}

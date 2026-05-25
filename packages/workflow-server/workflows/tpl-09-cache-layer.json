@@ -1,0 +1,225 @@
+{
+  "id": "tpl-09-cache-layer",
+  "name": "缓存加速层",
+  "description": "【官方模板】相同数据两次经过缓存节点（第二次命中）",
+  "version": "1.0.0",
+  "nodes": [
+    {
+      "id": "data",
+      "type": "code-javascript",
+      "position": {
+        "x": 0,
+        "y": 160
+      },
+      "data": {
+        "label": "生成数据",
+        "config": {
+          "code": "return { result: { id: \"cache-demo\", values: [1, 2, 3] } };"
+        },
+        "inputs": [],
+        "outputs": []
+      }
+    },
+    {
+      "id": "cache1",
+      "type": "tool-cache",
+      "position": {
+        "x": 280,
+        "y": 80
+      },
+      "data": {
+        "label": "缓存层 1",
+        "config": {
+          "ttl": 3600000,
+          "maxEntries": 500
+        },
+        "inputs": [],
+        "outputs": []
+      }
+    },
+    {
+      "id": "cache2",
+      "type": "tool-cache",
+      "position": {
+        "x": 280,
+        "y": 240
+      },
+      "data": {
+        "label": "缓存层 2",
+        "config": {
+          "ttl": 3600000,
+          "maxEntries": 500
+        },
+        "inputs": [],
+        "outputs": []
+      }
+    },
+    {
+      "id": "proc1",
+      "type": "code-javascript",
+      "position": {
+        "x": 560,
+        "y": 80
+      },
+      "data": {
+        "label": "处理路径1",
+        "config": {
+          "code": "return { result: { path: 1, hit: inputs.hit, size: inputs.size, data: inputs.data } };"
+        },
+        "inputs": [
+          {
+            "id": "data",
+            "name": "数据",
+            "type": "any"
+          },
+          {
+            "id": "hit",
+            "name": "命中",
+            "type": "boolean"
+          },
+          {
+            "id": "size",
+            "name": "大小",
+            "type": "number"
+          }
+        ],
+        "outputs": []
+      }
+    },
+    {
+      "id": "proc2",
+      "type": "code-javascript",
+      "position": {
+        "x": 560,
+        "y": 240
+      },
+      "data": {
+        "label": "处理路径2",
+        "config": {
+          "code": "return { result: { path: 2, hit: inputs.hit, data: inputs.data } };"
+        },
+        "inputs": [
+          {
+            "id": "data",
+            "name": "数据",
+            "type": "any"
+          },
+          {
+            "id": "hit",
+            "name": "命中",
+            "type": "boolean"
+          }
+        ],
+        "outputs": []
+      }
+    },
+    {
+      "id": "summary",
+      "type": "code-javascript",
+      "position": {
+        "x": 840,
+        "y": 160
+      },
+      "data": {
+        "label": "对比缓存",
+        "config": {
+          "code": "return { result: { first: inputs.p1, second: inputs.p2 } };"
+        },
+        "inputs": [
+          {
+            "id": "p1",
+            "name": "路径1",
+            "type": "any"
+          },
+          {
+            "id": "p2",
+            "name": "路径2",
+            "type": "any"
+          }
+        ],
+        "outputs": []
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "data",
+      "sourceHandle": "result",
+      "target": "cache1",
+      "targetHandle": "data"
+    },
+    {
+      "id": "e2",
+      "source": "data",
+      "sourceHandle": "result",
+      "target": "cache2",
+      "targetHandle": "data"
+    },
+    {
+      "id": "e3",
+      "source": "cache1",
+      "sourceHandle": "result",
+      "target": "proc1",
+      "targetHandle": "data"
+    },
+    {
+      "id": "e4",
+      "source": "cache1",
+      "sourceHandle": "cacheHit",
+      "target": "proc1",
+      "targetHandle": "hit"
+    },
+    {
+      "id": "e5",
+      "source": "cache1",
+      "sourceHandle": "cacheSize",
+      "target": "proc1",
+      "targetHandle": "size"
+    },
+    {
+      "id": "e6",
+      "source": "cache2",
+      "sourceHandle": "result",
+      "target": "proc2",
+      "targetHandle": "data"
+    },
+    {
+      "id": "e7",
+      "source": "cache2",
+      "sourceHandle": "cacheHit",
+      "target": "proc2",
+      "targetHandle": "hit"
+    },
+    {
+      "id": "e8",
+      "source": "proc1",
+      "sourceHandle": "result",
+      "target": "summary",
+      "targetHandle": "p1"
+    },
+    {
+      "id": "e9",
+      "source": "proc2",
+      "sourceHandle": "result",
+      "target": "summary",
+      "targetHandle": "p2"
+    }
+  ],
+  "variables": [],
+  "triggers": [
+    {
+      "type": "manual",
+      "enabled": true,
+      "config": {}
+    }
+  ],
+  "settings": {
+    "maxExecutionTime": 120000,
+    "maxNodeRetries": 0,
+    "errorStrategy": "fail-fast",
+    "concurrencyLimit": 10
+  },
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "updatedAt": "2026-05-25T09:26:52.936Z"
+}

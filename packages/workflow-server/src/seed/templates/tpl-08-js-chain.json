@@ -1,0 +1,170 @@
+{
+  "id": "tpl-08-js-chain",
+  "name": "多级 JS 编排",
+  "description": "【官方模板】5 段 JS + 表达式传参链式处理",
+  "version": "1.0.0",
+  "nodes": [
+    {
+      "id": "s1",
+      "type": "code-javascript",
+      "position": {
+        "x": 0,
+        "y": 120
+      },
+      "data": {
+        "label": "阶段1-初始化",
+        "config": {
+          "code": "return { result: { items: [1, 2, 3, 4, 5], multiplier: 2 } };"
+        },
+        "inputs": [],
+        "outputs": []
+      }
+    },
+    {
+      "id": "s2",
+      "type": "code-javascript",
+      "position": {
+        "x": 220,
+        "y": 120
+      },
+      "data": {
+        "label": "阶段2-缩放",
+        "config": {
+          "code": "const base = inputs.payload;\nconst items = base.items.map((n) => n * base.multiplier);\nreturn { result: { ...base, items, stage: 2 } };"
+        },
+        "inputs": [
+          {
+            "id": "payload",
+            "name": "载荷",
+            "type": "any"
+          }
+        ],
+        "outputs": []
+      }
+    },
+    {
+      "id": "s3",
+      "type": "code-javascript",
+      "position": {
+        "x": 440,
+        "y": 120
+      },
+      "data": {
+        "label": "阶段3-过滤",
+        "config": {
+          "code": "const p = inputs.payload;\nreturn { result: { ...p, items: p.items.filter((n) => n > 4), stage: 3 } };"
+        },
+        "inputs": [
+          {
+            "id": "payload",
+            "name": "载荷",
+            "type": "any"
+          }
+        ],
+        "outputs": []
+      }
+    },
+    {
+      "id": "s4",
+      "type": "data-transform",
+      "position": {
+        "x": 660,
+        "y": 120
+      },
+      "data": {
+        "label": "阶段4-计数",
+        "config": {
+          "operation": "count"
+        },
+        "inputs": [
+          {
+            "id": "data",
+            "name": "输入",
+            "type": "any"
+          }
+        ],
+        "outputs": []
+      }
+    },
+    {
+      "id": "s5",
+      "type": "code-javascript",
+      "position": {
+        "x": 880,
+        "y": 120
+      },
+      "data": {
+        "label": "阶段5-收尾",
+        "config": {
+          "code": "return {\n  result: {\n    count: inputs.count,\n    lastPayload: inputs.payload,\n    done: true,\n  },\n};"
+        },
+        "inputs": [
+          {
+            "id": "count",
+            "name": "计数",
+            "type": "any"
+          },
+          {
+            "id": "payload",
+            "name": "载荷",
+            "type": "any"
+          }
+        ],
+        "outputs": []
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "s1",
+      "sourceHandle": "result",
+      "target": "s2",
+      "targetHandle": "payload"
+    },
+    {
+      "id": "e2",
+      "source": "s2",
+      "sourceHandle": "result",
+      "target": "s3",
+      "targetHandle": "payload"
+    },
+    {
+      "id": "e3",
+      "source": "s3",
+      "sourceHandle": "result",
+      "target": "s4",
+      "targetHandle": "data"
+    },
+    {
+      "id": "e4",
+      "source": "s3",
+      "sourceHandle": "result",
+      "target": "s5",
+      "targetHandle": "payload"
+    },
+    {
+      "id": "e5",
+      "source": "s4",
+      "sourceHandle": "result",
+      "target": "s5",
+      "targetHandle": "count"
+    }
+  ],
+  "variables": [],
+  "triggers": [
+    {
+      "type": "manual",
+      "enabled": true,
+      "config": {}
+    }
+  ],
+  "settings": {
+    "maxExecutionTime": 120000,
+    "maxNodeRetries": 0,
+    "errorStrategy": "fail-fast",
+    "concurrencyLimit": 10
+  },
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}

@@ -1,0 +1,142 @@
+{
+  "id": "tpl-01-data-pipeline",
+  "name": "数据处理流水线",
+  "description": "【官方模板】JS 生成用户列表 → 过滤 → 统计 → 汇总报告",
+  "version": "1.0.0",
+  "nodes": [
+    {
+      "id": "gen",
+      "type": "code-javascript",
+      "position": {
+        "x": 0,
+        "y": 120
+      },
+      "data": {
+        "label": "生成用户数据",
+        "config": {
+          "code": "return {\n  result: [\n    { id: 1, name: \"Alice\", score: 88, dept: \"eng\" },\n    { id: 2, name: \"Bob\", score: 52, dept: \"sales\" },\n    { id: 3, name: \"Carol\", score: 91, dept: \"eng\" },\n    { id: 4, name: \"Dave\", score: 67, dept: \"ops\" },\n    { id: 5, name: \"Eve\", score: 45, dept: \"sales\" },\n  ],\n};"
+        },
+        "inputs": [],
+        "outputs": []
+      }
+    },
+    {
+      "id": "filter",
+      "type": "data-transform",
+      "position": {
+        "x": 280,
+        "y": 120
+      },
+      "data": {
+        "label": "过滤及格用户",
+        "config": {
+          "operation": "filter",
+          "expression": "item.score >= 60"
+        },
+        "inputs": [
+          {
+            "id": "data",
+            "name": "输入数据",
+            "type": "array"
+          }
+        ],
+        "outputs": []
+      }
+    },
+    {
+      "id": "count",
+      "type": "data-transform",
+      "position": {
+        "x": 560,
+        "y": 120
+      },
+      "data": {
+        "label": "统计人数",
+        "config": {
+          "operation": "count"
+        },
+        "inputs": [
+          {
+            "id": "data",
+            "name": "输入数据",
+            "type": "any"
+          }
+        ],
+        "outputs": []
+      }
+    },
+    {
+      "id": "report",
+      "type": "code-javascript",
+      "position": {
+        "x": 840,
+        "y": 120
+      },
+      "data": {
+        "label": "生成报告",
+        "config": {
+          "code": "const count = inputs.data;\nconst users = inputs.users;\nreturn {\n  result: {\n    passedCount: count,\n    topUser: Array.isArray(users) && users.length\n      ? users.reduce((a, b) => (a.score > b.score ? a : b))\n      : null,\n    generatedAt: new Date().toISOString(),\n  },\n};"
+        },
+        "inputs": [
+          {
+            "id": "data",
+            "name": "数量",
+            "type": "any"
+          },
+          {
+            "id": "users",
+            "name": "用户",
+            "type": "any"
+          }
+        ],
+        "outputs": []
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "gen",
+      "sourceHandle": "result",
+      "target": "filter",
+      "targetHandle": "data"
+    },
+    {
+      "id": "e2",
+      "source": "gen",
+      "sourceHandle": "result",
+      "target": "report",
+      "targetHandle": "users"
+    },
+    {
+      "id": "e3",
+      "source": "filter",
+      "sourceHandle": "result",
+      "target": "count",
+      "targetHandle": "data"
+    },
+    {
+      "id": "e4",
+      "source": "count",
+      "sourceHandle": "result",
+      "target": "report",
+      "targetHandle": "data"
+    }
+  ],
+  "variables": [],
+  "triggers": [
+    {
+      "type": "manual",
+      "enabled": true,
+      "config": {}
+    }
+  ],
+  "settings": {
+    "maxExecutionTime": 120000,
+    "maxNodeRetries": 0,
+    "errorStrategy": "fail-fast",
+    "concurrencyLimit": 10
+  },
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}

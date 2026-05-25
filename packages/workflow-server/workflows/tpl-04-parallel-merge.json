@@ -1,0 +1,176 @@
+{
+  "id": "tpl-04-parallel-merge",
+  "name": "并行任务汇聚",
+  "description": "【官方模板】一分三并行延时后汇聚（测试并发调度）",
+  "version": "1.0.0",
+  "nodes": [
+    {
+      "id": "start",
+      "type": "code-javascript",
+      "position": {
+        "x": 0,
+        "y": 200
+      },
+      "data": {
+        "label": "发起任务",
+        "config": {
+          "code": "return { result: { taskId: \"T-\" + Date.now(), label: \"并行演示\" } };"
+        },
+        "inputs": [],
+        "outputs": []
+      }
+    },
+    {
+      "id": "delay-a",
+      "type": "flow-delay",
+      "position": {
+        "x": 300,
+        "y": 80
+      },
+      "data": {
+        "label": "分支 A 等待",
+        "config": {
+          "duration": 80
+        },
+        "inputs": [],
+        "outputs": []
+      }
+    },
+    {
+      "id": "delay-b",
+      "type": "flow-delay",
+      "position": {
+        "x": 300,
+        "y": 200
+      },
+      "data": {
+        "label": "分支 B 等待",
+        "config": {
+          "duration": 150
+        },
+        "inputs": [],
+        "outputs": []
+      }
+    },
+    {
+      "id": "delay-c",
+      "type": "flow-delay",
+      "position": {
+        "x": 300,
+        "y": 320
+      },
+      "data": {
+        "label": "分支 C 等待",
+        "config": {
+          "duration": 220
+        },
+        "inputs": [],
+        "outputs": []
+      }
+    },
+    {
+      "id": "merge",
+      "type": "code-javascript",
+      "position": {
+        "x": 620,
+        "y": 200
+      },
+      "data": {
+        "label": "汇聚结果",
+        "config": {
+          "code": "return {\n  result: {\n    task: inputs.task,\n    branches: { a: inputs.a, b: inputs.b, c: inputs.c },\n    finishedAt: Date.now(),\n  },\n};"
+        },
+        "inputs": [
+          {
+            "id": "task",
+            "name": "任务",
+            "type": "any"
+          },
+          {
+            "id": "a",
+            "name": "A",
+            "type": "any"
+          },
+          {
+            "id": "b",
+            "name": "B",
+            "type": "any"
+          },
+          {
+            "id": "c",
+            "name": "C",
+            "type": "any"
+          }
+        ],
+        "outputs": []
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "start",
+      "sourceHandle": "result",
+      "target": "delay-a",
+      "targetHandle": "passthrough"
+    },
+    {
+      "id": "e2",
+      "source": "start",
+      "sourceHandle": "result",
+      "target": "delay-b",
+      "targetHandle": "passthrough"
+    },
+    {
+      "id": "e3",
+      "source": "start",
+      "sourceHandle": "result",
+      "target": "delay-c",
+      "targetHandle": "passthrough"
+    },
+    {
+      "id": "e4",
+      "source": "start",
+      "sourceHandle": "result",
+      "target": "merge",
+      "targetHandle": "task"
+    },
+    {
+      "id": "e5",
+      "source": "delay-a",
+      "sourceHandle": "passthrough",
+      "target": "merge",
+      "targetHandle": "a"
+    },
+    {
+      "id": "e6",
+      "source": "delay-b",
+      "sourceHandle": "passthrough",
+      "target": "merge",
+      "targetHandle": "b"
+    },
+    {
+      "id": "e7",
+      "source": "delay-c",
+      "sourceHandle": "passthrough",
+      "target": "merge",
+      "targetHandle": "c"
+    }
+  ],
+  "variables": [],
+  "triggers": [
+    {
+      "type": "manual",
+      "enabled": true,
+      "config": {}
+    }
+  ],
+  "settings": {
+    "maxExecutionTime": 120000,
+    "maxNodeRetries": 0,
+    "errorStrategy": "fail-fast",
+    "concurrencyLimit": 5
+  },
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "updatedAt": "2026-05-25T09:26:52.932Z"
+}

@@ -1,0 +1,48 @@
+{
+  "id": "agent-pipe-001",
+  "name": "Agent 管道测试",
+  "description": "读取文件 → 通过终端命令处理 → 保存结果（模拟 Agent 管道）",
+  "version": "1.0.0",
+  "settings": {
+    "maxExecutionTime": 30000,
+    "maxNodeRetries": 0,
+    "errorStrategy": "fail-fast",
+    "concurrencyLimit": 5
+  },
+  "nodes": [
+    {
+      "id": "input",
+      "type": "code-javascript",
+      "position": { "x": 100, "y": 200 },
+      "data": {
+        "label": "准备数据",
+        "config": {
+          "code": "return { content: 'hello world\\nfoo bar\\ntest 123' };"
+        },
+        "inputs": [],
+        "outputs": [{ "id": "content", "name": "内容", "type": "string" }]
+      }
+    },
+    {
+      "id": "agent",
+      "type": "io-terminal",
+      "position": { "x": 400, "y": 200 },
+      "data": {
+        "label": "终端处理",
+        "config": {
+          "command": "powershell -Command \"$input | ForEach-Object { $_.ToUpper() }\"",
+          "stdinMode": "text",
+          "outputMode": "text",
+          "shell": true
+        },
+        "inputs": [{ "id": "stdin", "name": "输入", "type": "string" }],
+        "outputs": [{ "id": "stdout", "name": "输出", "type": "string" }]
+      }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "input", "sourceHandle": "content", "target": "agent", "targetHandle": "stdin" }
+  ],
+  "variables": [],
+  "triggers": [{ "type": "manual", "enabled": true, "config": {} }]
+}

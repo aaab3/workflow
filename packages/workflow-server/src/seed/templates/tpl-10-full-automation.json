@@ -1,0 +1,287 @@
+{
+  "id": "tpl-10-full-automation",
+  "name": "综合自动化流程",
+  "description": "【官方模板】输入参数 → 条件 → 循环 → 延时 → 转换 → 报告",
+  "version": "1.0.0",
+  "nodes": [
+    {
+      "id": "input",
+      "type": "code-javascript",
+      "position": {
+        "x": 0,
+        "y": 200
+      },
+      "data": {
+        "label": "读取工作流输入",
+        "config": {
+          "code": "const threshold = inputs.threshold ?? 50;\nconst items = inputs.items ?? [10, 20, 30, 40, 55, 70];\nreturn { result: { threshold, items } };"
+        },
+        "inputs": [
+          {
+            "id": "threshold",
+            "name": "阈值",
+            "type": "number"
+          },
+          {
+            "id": "items",
+            "name": "数据项",
+            "type": "any"
+          }
+        ],
+        "outputs": []
+      }
+    },
+    {
+      "id": "pick-thresh",
+      "type": "code-javascript",
+      "position": {
+        "x": 200,
+        "y": 200
+      },
+      "data": {
+        "label": "提取阈值",
+        "config": {
+          "code": "return { result: inputs.payload.threshold };"
+        },
+        "inputs": [
+          {
+            "id": "payload",
+            "name": "载荷",
+            "type": "any"
+          }
+        ],
+        "outputs": []
+      }
+    },
+    {
+      "id": "pick-items",
+      "type": "code-javascript",
+      "position": {
+        "x": 200,
+        "y": 80
+      },
+      "data": {
+        "label": "提取数据项",
+        "config": {
+          "code": "return { result: inputs.payload.items };"
+        },
+        "inputs": [
+          {
+            "id": "payload",
+            "name": "载荷",
+            "type": "any"
+          }
+        ],
+        "outputs": []
+      }
+    },
+    {
+      "id": "check",
+      "type": "flow-condition",
+      "position": {
+        "x": 400,
+        "y": 200
+      },
+      "data": {
+        "label": "阈值检查(>=40)",
+        "config": {
+          "operator": ">=",
+          "compareValue": 40
+        },
+        "inputs": [
+          {
+            "id": "value",
+            "name": "判断值",
+            "type": "any"
+          }
+        ],
+        "outputs": []
+      }
+    },
+    {
+      "id": "loop",
+      "type": "flow-loop",
+      "position": {
+        "x": 640,
+        "y": 120
+      },
+      "data": {
+        "label": "循环加工",
+        "config": {
+          "mode": "forEach",
+          "expression": "item * 2"
+        },
+        "inputs": [
+          {
+            "id": "items",
+            "name": "数组",
+            "type": "array"
+          }
+        ],
+        "outputs": []
+      }
+    },
+    {
+      "id": "wait",
+      "type": "flow-delay",
+      "position": {
+        "x": 880,
+        "y": 120
+      },
+      "data": {
+        "label": "缓冲等待",
+        "config": {
+          "duration": 50
+        },
+        "inputs": [],
+        "outputs": []
+      }
+    },
+    {
+      "id": "count",
+      "type": "data-transform",
+      "position": {
+        "x": 1120,
+        "y": 120
+      },
+      "data": {
+        "label": "统计结果",
+        "config": {
+          "operation": "count"
+        },
+        "inputs": [
+          {
+            "id": "data",
+            "name": "数据",
+            "type": "any"
+          }
+        ],
+        "outputs": []
+      }
+    },
+    {
+      "id": "bypass",
+      "type": "code-javascript",
+      "position": {
+        "x": 640,
+        "y": 320
+      },
+      "data": {
+        "label": "低阈值旁路",
+        "config": {
+          "code": "return { result: { bypass: true, note: \"阈值条件为假\" } };"
+        },
+        "inputs": [],
+        "outputs": []
+      }
+    },
+    {
+      "id": "report",
+      "type": "code-javascript",
+      "position": {
+        "x": 1360,
+        "y": 200
+      },
+      "data": {
+        "label": "最终报告",
+        "config": {
+          "code": "return {\n  result: {\n    mode: inputs.bypass ? \"bypass\" : \"pipeline\",\n    count: inputs.count,\n    bypass: inputs.bypass,\n    completedAt: new Date().toISOString(),\n  },\n};"
+        },
+        "inputs": [
+          {
+            "id": "count",
+            "name": "计数",
+            "type": "any"
+          },
+          {
+            "id": "bypass",
+            "name": "旁路",
+            "type": "any"
+          }
+        ],
+        "outputs": []
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "input",
+      "sourceHandle": "result",
+      "target": "pick-thresh",
+      "targetHandle": "payload"
+    },
+    {
+      "id": "e2",
+      "source": "input",
+      "sourceHandle": "result",
+      "target": "pick-items",
+      "targetHandle": "payload"
+    },
+    {
+      "id": "e3",
+      "source": "pick-thresh",
+      "sourceHandle": "result",
+      "target": "check",
+      "targetHandle": "value"
+    },
+    {
+      "id": "e4",
+      "source": "pick-items",
+      "sourceHandle": "result",
+      "target": "loop",
+      "targetHandle": "items"
+    },
+    {
+      "id": "e5",
+      "source": "loop",
+      "sourceHandle": "results",
+      "target": "wait",
+      "targetHandle": "passthrough"
+    },
+    {
+      "id": "e6",
+      "source": "wait",
+      "sourceHandle": "passthrough",
+      "target": "count",
+      "targetHandle": "data"
+    },
+    {
+      "id": "e7",
+      "source": "check",
+      "sourceHandle": "false",
+      "target": "bypass",
+      "targetHandle": "input"
+    },
+    {
+      "id": "e8",
+      "source": "count",
+      "sourceHandle": "result",
+      "target": "report",
+      "targetHandle": "count"
+    },
+    {
+      "id": "e9",
+      "source": "bypass",
+      "sourceHandle": "result",
+      "target": "report",
+      "targetHandle": "bypass"
+    }
+  ],
+  "variables": [],
+  "triggers": [
+    {
+      "type": "manual",
+      "enabled": true,
+      "config": {}
+    }
+  ],
+  "settings": {
+    "maxExecutionTime": 120000,
+    "maxNodeRetries": 0,
+    "errorStrategy": "fail-fast",
+    "concurrencyLimit": 10
+  },
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}

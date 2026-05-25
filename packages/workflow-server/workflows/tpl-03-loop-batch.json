@@ -1,0 +1,142 @@
+{
+  "id": "tpl-03-loop-batch",
+  "name": "循环批处理",
+  "description": "【官方模板】forEach 循环处理订单并汇总",
+  "version": "1.0.0",
+  "nodes": [
+    {
+      "id": "orders",
+      "type": "code-javascript",
+      "position": {
+        "x": 0,
+        "y": 120
+      },
+      "data": {
+        "label": "生成订单",
+        "config": {
+          "code": "return {\n  result: [\n    { sku: \"A\", qty: 2, price: 10 },\n    { sku: \"B\", qty: 1, price: 25 },\n    { sku: \"C\", qty: 5, price: 3 },\n  ],\n};"
+        },
+        "inputs": [],
+        "outputs": []
+      }
+    },
+    {
+      "id": "loop",
+      "type": "flow-loop",
+      "position": {
+        "x": 280,
+        "y": 120
+      },
+      "data": {
+        "label": "计算行金额",
+        "config": {
+          "mode": "forEach",
+          "expression": "{ sku: item.sku, total: item.qty * item.price }"
+        },
+        "inputs": [
+          {
+            "id": "items",
+            "name": "数组数据",
+            "type": "array"
+          }
+        ],
+        "outputs": []
+      }
+    },
+    {
+      "id": "stats",
+      "type": "data-transform",
+      "position": {
+        "x": 560,
+        "y": 120
+      },
+      "data": {
+        "label": "统计条数",
+        "config": {
+          "operation": "count"
+        },
+        "inputs": [
+          {
+            "id": "data",
+            "name": "输入数据",
+            "type": "any"
+          }
+        ],
+        "outputs": []
+      }
+    },
+    {
+      "id": "sum",
+      "type": "code-javascript",
+      "position": {
+        "x": 840,
+        "y": 120
+      },
+      "data": {
+        "label": "求总金额",
+        "config": {
+          "code": "const rows = inputs.rows;\nconst total = Array.isArray(rows)\n  ? rows.reduce((s, r) => s + (r.total ?? 0), 0)\n  : 0;\nreturn { result: { rowCount: inputs.count, grandTotal: total, rows } };"
+        },
+        "inputs": [
+          {
+            "id": "rows",
+            "name": "行数据",
+            "type": "any"
+          },
+          {
+            "id": "count",
+            "name": "数量",
+            "type": "any"
+          }
+        ],
+        "outputs": []
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "orders",
+      "sourceHandle": "result",
+      "target": "loop",
+      "targetHandle": "items"
+    },
+    {
+      "id": "e2",
+      "source": "loop",
+      "sourceHandle": "results",
+      "target": "stats",
+      "targetHandle": "data"
+    },
+    {
+      "id": "e3",
+      "source": "loop",
+      "sourceHandle": "results",
+      "target": "sum",
+      "targetHandle": "rows"
+    },
+    {
+      "id": "e4",
+      "source": "stats",
+      "sourceHandle": "result",
+      "target": "sum",
+      "targetHandle": "count"
+    }
+  ],
+  "variables": [],
+  "triggers": [
+    {
+      "type": "manual",
+      "enabled": true,
+      "config": {}
+    }
+  ],
+  "settings": {
+    "maxExecutionTime": 120000,
+    "maxNodeRetries": 0,
+    "errorStrategy": "fail-fast",
+    "concurrencyLimit": 10
+  },
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "updatedAt": "2026-05-25T09:26:52.932Z"
+}

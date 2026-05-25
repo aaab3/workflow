@@ -1,0 +1,89 @@
+{
+  "id": "data-pipeline-001",
+  "name": "数据管道",
+  "description": "HTTP 获取数据 → 过滤 → 提取字段 → 写入文件",
+  "version": "1.0.0",
+  "settings": {
+    "maxExecutionTime": 30000,
+    "maxNodeRetries": 2,
+    "errorStrategy": "fail-fast",
+    "concurrencyLimit": 5
+  },
+  "nodes": [
+    {
+      "id": "fetch-data",
+      "type": "io-http-request",
+      "position": { "x": 100, "y": 200 },
+      "data": {
+        "label": "获取远程数据",
+        "config": {
+          "url": "{{input.apiUrl}}",
+          "method": "GET",
+          "headers": "{\"Accept\": \"application/json\"}",
+          "timeout": 10000
+        },
+        "inputs": [],
+        "outputs": [
+          { "id": "body", "name": "响应体", "type": "any" },
+          { "id": "status", "name": "状态码", "type": "number" },
+          { "id": "headers", "name": "响应头", "type": "object" }
+        ]
+      }
+    },
+    {
+      "id": "filter-data",
+      "type": "data-transform",
+      "position": { "x": 400, "y": 200 },
+      "data": {
+        "label": "过滤有效数据",
+        "config": {
+          "operation": "filter",
+          "expression": "item.active !== false && item.name"
+        },
+        "inputs": [{ "id": "data", "name": "原始数据", "type": "any" }],
+        "outputs": [{ "id": "result", "name": "过滤结果", "type": "any" }]
+      }
+    },
+    {
+      "id": "pick-fields",
+      "type": "data-transform",
+      "position": { "x": 700, "y": 200 },
+      "data": {
+        "label": "提取关键字段",
+        "config": {
+          "operation": "pick",
+          "fields": "id, name, email, role"
+        },
+        "inputs": [{ "id": "data", "name": "过滤后数据", "type": "any" }],
+        "outputs": [{ "id": "result", "name": "精简数据", "type": "any" }]
+      }
+    },
+    {
+      "id": "write-output",
+      "type": "io-file-write",
+      "position": { "x": 1000, "y": 200 },
+      "data": {
+        "label": "写入结果",
+        "config": {
+          "path": "{{input.outputFile}}",
+          "content": "{{pick-fields.result}}"
+        },
+        "inputs": [{ "id": "content", "name": "数据", "type": "any" }],
+        "outputs": [
+          { "id": "success", "name": "是否成功", "type": "boolean" },
+          { "id": "path", "name": "文件路径", "type": "string" }
+        ]
+      }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "fetch-data", "sourceHandle": "body", "target": "filter-data", "targetHandle": "data" },
+    { "id": "e2", "source": "filter-data", "sourceHandle": "result", "target": "pick-fields", "targetHandle": "data" },
+    { "id": "e3", "source": "pick-fields", "sourceHandle": "result", "target": "write-output", "targetHandle": "content" }
+  ],
+  "variables": [
+    { "name": "apiUrl", "type": "string", "defaultValue": "https://jsonplaceholder.typicode.com/users", "description": "API 地址" },
+    { "name": "outputFile", "type": "string", "defaultValue": "./pipeline-output.json", "description": "输出文件路径" }
+  ],
+  "triggers": [{ "type": "manual", "enabled": true, "config": {} }]
+}

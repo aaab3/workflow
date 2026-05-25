@@ -1,0 +1,457 @@
+@import "tailwindcss";
+@import "@xyflow/react/dist/style.css";
+
+:root {
+  --color-primary: #4f46e5;
+  --color-primary-hover: #4338ca;
+  --color-primary-muted: #e0e7ff;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f8fafc;
+  --color-surface-elevated: #ffffff;
+  --color-border: #e2e8f0;
+  --color-border-strong: #cbd5e1;
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
+  --color-success: #16a34a;
+  --color-warning: #d97706;
+  --color-danger: #dc2626;
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --radius: 8px;
+  --font-mono: ui-monospace, "Cascadia Code", "Segoe UI Mono", monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  color: var(--color-text);
+  background: var(--color-surface-alt);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ─── Layout primitives ─────────────────────────────────────────────────── */
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background: var(--color-surface-alt);
+}
+
+.app-main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.canvas-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.side-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+.side-panel--left {
+  width: 240px;
+  border-right: 1px solid var(--color-border);
+}
+
+.side-panel--right {
+  width: 300px;
+  border-left: 1px solid var(--color-border);
+}
+
+/* ─── Toolbar ───────────────────────────────────────────────────────────── */
+
+.toolbar {
+  height: 52px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.toolbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.toolbar-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.toolbar-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--color-border);
+  margin: 0 4px;
+}
+
+.toolbar-spacer {
+  flex: 1;
+}
+
+.toolbar-status {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbar-progress {
+  width: 120px;
+  height: 4px;
+  background: var(--color-border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.toolbar-progress-fill {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: 2px;
+  transition: width 0.25s ease;
+}
+
+/* ─── Buttons ───────────────────────────────────────────────────────────── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--color-surface-alt);
+  border-color: var(--color-border-strong);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn--ghost {
+  border-color: transparent;
+  background: transparent;
+}
+
+.btn--ghost:hover:not(:disabled) {
+  background: var(--color-surface-alt);
+}
+
+.btn--primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+.btn--danger {
+  color: var(--color-danger);
+  border-color: #fecaca;
+}
+
+.btn--danger:hover:not(:disabled) {
+  background: #fef2f2;
+}
+
+.btn--sm {
+  padding: 4px 8px;
+  font-size: 11px;
+}
+
+.btn--icon {
+  padding: 6px 8px;
+  min-width: 32px;
+}
+
+/* ─── Inputs ──────────────────────────────────────────────────────────────── */
+
+.input {
+  width: 100%;
+  padding: 7px 10px;
+  font-size: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  outline: none;
+  background: var(--color-surface);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-muted);
+}
+
+.input--search {
+  padding-left: 32px;
+}
+
+/* ─── Module panel ────────────────────────────────────────────────────────── */
+
+.module-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  font-size: 12px;
+  border-radius: 6px;
+  cursor: grab;
+  border: 1px solid transparent;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.module-item:hover {
+  background: var(--color-surface-alt);
+  border-color: var(--color-border);
+}
+
+.module-item:active {
+  cursor: grabbing;
+}
+
+.module-item-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.category-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  padding: 8px 10px 4px;
+}
+
+/* ─── Execution panel ─────────────────────────────────────────────────────── */
+
+.execution-panel {
+  flex-shrink: 0;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.execution-panel--open {
+  height: 260px;
+}
+
+.execution-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.execution-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.execution-tab {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.execution-tab--active {
+  background: var(--color-primary-muted);
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.execution-body {
+  flex: 1;
+  overflow: auto;
+  padding: 12px 16px;
+}
+
+.node-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  margin-bottom: 4px;
+}
+
+.node-progress-row:hover {
+  background: var(--color-surface-alt);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot--pending { background: #cbd5e1; }
+.status-dot--running { background: var(--color-warning); animation: pulse 1s ease infinite; }
+.status-dot--completed { background: var(--color-success); }
+.status-dot--failed { background: var(--color-danger); }
+.status-dot--skipped { background: #94a3b8; }
+
+.log-line {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 3px 0;
+  border-bottom: 1px solid #f1f5f9;
+  line-height: 1.5;
+}
+
+.log-line--error { color: var(--color-danger); }
+.log-line--warn { color: var(--color-warning); }
+
+/* ─── React Flow overrides ────────────────────────────────────────────────── */
+
+.react-flow__edge-path {
+  stroke-width: 2;
+}
+
+.react-flow__edge.animated path {
+  stroke: var(--color-primary);
+  stroke-dasharray: 6 4;
+  animation: dash 0.6s linear infinite;
+}
+
+.react-flow__controls {
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow-md) !important;
+  overflow: hidden;
+}
+
+.react-flow__minimap {
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.connection-invalid .react-flow__handle {
+  background: var(--color-danger) !important;
+}
+
+/* ─── Animations ──────────────────────────────────────────────────────────── */
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes dash {
+  to { stroke-dashoffset: -10; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+/* ─── Modal overlay ───────────────────────────────────────────────────────── */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+
+.modal-card {
+  background: var(--color-surface);
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.15);
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}

@@ -1,0 +1,124 @@
+{
+  "id": "tpl-06-file-etl",
+  "name": "文件读写 ETL",
+  "description": "【官方模板】生成内容 → 写入文件 → 读取 → 转换",
+  "version": "1.0.0",
+  "nodes": [
+    {
+      "id": "prep",
+      "type": "code-javascript",
+      "position": {
+        "x": 0,
+        "y": 120
+      },
+      "data": {
+        "label": "准备内容",
+        "config": {
+          "code": "return {\n  result: JSON.stringify({\n    pipeline: \"file-etl\",\n    rows: [{ id: 1, v: \"alpha\" }, { id: 2, v: \"beta\" }],\n    ts: Date.now(),\n  }, null, 2),\n};"
+        },
+        "inputs": [],
+        "outputs": []
+      }
+    },
+    {
+      "id": "write",
+      "type": "io-file-write",
+      "position": {
+        "x": 280,
+        "y": 120
+      },
+      "data": {
+        "label": "写入文件",
+        "config": {
+          "path": "seed-data/etl-output.json",
+          "createDirs": true
+        },
+        "inputs": [
+          {
+            "id": "content",
+            "name": "内容",
+            "type": "string"
+          }
+        ],
+        "outputs": []
+      }
+    },
+    {
+      "id": "read",
+      "type": "io-file-read",
+      "position": {
+        "x": 560,
+        "y": 120
+      },
+      "data": {
+        "label": "读取文件",
+        "config": {
+          "path": "seed-data/etl-output.json"
+        },
+        "inputs": [],
+        "outputs": []
+      }
+    },
+    {
+      "id": "parse",
+      "type": "code-javascript",
+      "position": {
+        "x": 840,
+        "y": 120
+      },
+      "data": {
+        "label": "解析 JSON",
+        "config": {
+          "code": "const raw = inputs.content;\nconst parsed = typeof raw === \"string\" ? JSON.parse(raw) : raw;\nreturn { result: { rowCount: parsed.rows?.length ?? 0, pipeline: parsed.pipeline } };"
+        },
+        "inputs": [
+          {
+            "id": "content",
+            "name": "内容",
+            "type": "string"
+          }
+        ],
+        "outputs": []
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "prep",
+      "sourceHandle": "result",
+      "target": "write",
+      "targetHandle": "content"
+    },
+    {
+      "id": "e2",
+      "source": "write",
+      "sourceHandle": "success",
+      "target": "read",
+      "targetHandle": "input"
+    },
+    {
+      "id": "e3",
+      "source": "read",
+      "sourceHandle": "content",
+      "target": "parse",
+      "targetHandle": "content"
+    }
+  ],
+  "variables": [],
+  "triggers": [
+    {
+      "type": "manual",
+      "enabled": true,
+      "config": {}
+    }
+  ],
+  "settings": {
+    "maxExecutionTime": 120000,
+    "maxNodeRetries": 0,
+    "errorStrategy": "fail-fast",
+    "concurrencyLimit": 10
+  },
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}

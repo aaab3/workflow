@@ -1,0 +1,171 @@
+{
+  "id": "tpl-02-condition-router",
+  "name": "条件分支路由",
+  "description": "【官方模板】分数判断 → 及格/不及格 双路径合并",
+  "version": "1.0.0",
+  "nodes": [
+    {
+      "id": "score",
+      "type": "code-javascript",
+      "position": {
+        "x": 0,
+        "y": 160
+      },
+      "data": {
+        "label": "生成分数",
+        "config": {
+          "code": "return { result: 73 };"
+        },
+        "inputs": [],
+        "outputs": []
+      }
+    },
+    {
+      "id": "branch",
+      "type": "flow-condition",
+      "position": {
+        "x": 280,
+        "y": 160
+      },
+      "data": {
+        "label": "是否及格(>=60)",
+        "config": {
+          "operator": ">=",
+          "compareValue": 60
+        },
+        "inputs": [
+          {
+            "id": "value",
+            "name": "判断值",
+            "type": "any"
+          }
+        ],
+        "outputs": []
+      }
+    },
+    {
+      "id": "pass",
+      "type": "code-javascript",
+      "position": {
+        "x": 560,
+        "y": 60
+      },
+      "data": {
+        "label": "及格处理",
+        "config": {
+          "code": "return { result: { status: \"pass\", data: inputs.value, msg: \"恭喜及格\" } };"
+        },
+        "inputs": [
+          {
+            "id": "data",
+            "name": "数据",
+            "type": "any"
+          }
+        ],
+        "outputs": []
+      }
+    },
+    {
+      "id": "fail",
+      "type": "code-javascript",
+      "position": {
+        "x": 560,
+        "y": 260
+      },
+      "data": {
+        "label": "不及格处理",
+        "config": {
+          "code": "return { result: { status: \"fail\", data: inputs.value, msg: \"需要补考\" } };"
+        },
+        "inputs": [
+          {
+            "id": "data",
+            "name": "数据",
+            "type": "any"
+          }
+        ],
+        "outputs": []
+      }
+    },
+    {
+      "id": "merge",
+      "type": "code-javascript",
+      "position": {
+        "x": 840,
+        "y": 160
+      },
+      "data": {
+        "label": "合并结果",
+        "config": {
+          "code": "return {\n  result: {\n    pass: inputs.pass,\n    fail: inputs.fail,\n    final: inputs.pass ?? inputs.fail,\n  },\n};"
+        },
+        "inputs": [
+          {
+            "id": "pass",
+            "name": "及格",
+            "type": "any"
+          },
+          {
+            "id": "fail",
+            "name": "不及格",
+            "type": "any"
+          }
+        ],
+        "outputs": []
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "score",
+      "sourceHandle": "result",
+      "target": "branch",
+      "targetHandle": "value"
+    },
+    {
+      "id": "e2",
+      "source": "branch",
+      "sourceHandle": "true",
+      "target": "pass",
+      "targetHandle": "data"
+    },
+    {
+      "id": "e3",
+      "source": "branch",
+      "sourceHandle": "false",
+      "target": "fail",
+      "targetHandle": "data"
+    },
+    {
+      "id": "e4",
+      "source": "pass",
+      "sourceHandle": "result",
+      "target": "merge",
+      "targetHandle": "pass"
+    },
+    {
+      "id": "e5",
+      "source": "fail",
+      "sourceHandle": "result",
+      "target": "merge",
+      "targetHandle": "fail"
+    }
+  ],
+  "variables": [],
+  "triggers": [
+    {
+      "type": "manual",
+      "enabled": true,
+      "config": {}
+    }
+  ],
+  "settings": {
+    "maxExecutionTime": 120000,
+    "maxNodeRetries": 0,
+    "errorStrategy": "fail-fast",
+    "concurrencyLimit": 10
+  },
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "updatedAt": "2026-05-25T09:26:52.930Z"
+}

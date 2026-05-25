@@ -1,0 +1,158 @@
+{
+  "id": "tpl-07-error-continue",
+  "name": "容错继续执行",
+  "description": "【官方模板】中间节点失败时 continue 策略下后续仍可完成",
+  "version": "1.0.0",
+  "nodes": [
+    {
+      "id": "ok",
+      "type": "code-javascript",
+      "position": {
+        "x": 0,
+        "y": 120
+      },
+      "data": {
+        "label": "正常节点",
+        "config": {
+          "code": "return { result: { step: \"ok\", value: 1 } };"
+        },
+        "inputs": [],
+        "outputs": []
+      }
+    },
+    {
+      "id": "fail",
+      "type": "code-javascript",
+      "position": {
+        "x": 280,
+        "y": 120
+      },
+      "data": {
+        "label": "故意失败",
+        "config": {
+          "code": "throw new Error(\"演示用失败：可忽略\");"
+        },
+        "inputs": [],
+        "outputs": []
+      }
+    },
+    {
+      "id": "after",
+      "type": "code-javascript",
+      "position": {
+        "x": 560,
+        "y": 220
+      },
+      "data": {
+        "label": "失败后续",
+        "config": {
+          "code": "return { result: { step: \"after-fail\", note: \"上游失败后被跳过\" } };"
+        },
+        "inputs": [],
+        "outputs": []
+      }
+    },
+    {
+      "id": "side",
+      "type": "code-javascript",
+      "position": {
+        "x": 560,
+        "y": 20
+      },
+      "data": {
+        "label": "并行成功支路",
+        "config": {
+          "code": "return { result: { step: \"side\", value: inputs.prev?.value + 100 } };"
+        },
+        "inputs": [
+          {
+            "id": "prev",
+            "name": "前值",
+            "type": "any"
+          }
+        ],
+        "outputs": []
+      }
+    },
+    {
+      "id": "final",
+      "type": "code-javascript",
+      "position": {
+        "x": 840,
+        "y": 120
+      },
+      "data": {
+        "label": "汇总",
+        "config": {
+          "code": "return { result: { side: inputs.side, after: inputs.after } };"
+        },
+        "inputs": [
+          {
+            "id": "side",
+            "name": "侧路",
+            "type": "any"
+          },
+          {
+            "id": "after",
+            "name": "后续",
+            "type": "any"
+          }
+        ],
+        "outputs": []
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "ok",
+      "sourceHandle": "result",
+      "target": "fail",
+      "targetHandle": "input"
+    },
+    {
+      "id": "e2",
+      "source": "fail",
+      "sourceHandle": "result",
+      "target": "after",
+      "targetHandle": "input"
+    },
+    {
+      "id": "e3",
+      "source": "ok",
+      "sourceHandle": "result",
+      "target": "side",
+      "targetHandle": "prev"
+    },
+    {
+      "id": "e4",
+      "source": "side",
+      "sourceHandle": "result",
+      "target": "final",
+      "targetHandle": "side"
+    },
+    {
+      "id": "e5",
+      "source": "after",
+      "sourceHandle": "result",
+      "target": "final",
+      "targetHandle": "after"
+    }
+  ],
+  "variables": [],
+  "triggers": [
+    {
+      "type": "manual",
+      "enabled": true,
+      "config": {}
+    }
+  ],
+  "settings": {
+    "maxExecutionTime": 120000,
+    "maxNodeRetries": 0,
+    "errorStrategy": "continue",
+    "concurrencyLimit": 10
+  },
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "updatedAt": "2026-05-25T09:26:52.935Z"
+}
